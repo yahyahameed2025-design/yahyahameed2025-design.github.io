@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    
+    <!-- PWA Settings (Retained from previous version for app installation compatibility) -->
+    <link rel="manifest" href="https://progressier.app/iRecYmtZiHxVV6UKnbH4/progressier.json"/>
+    <script defer src="https://progressier.app/iRecYmtZiHxVV6UKnbH4/script.js"></script>
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Order & Requests System</title>
+    
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Modern CSS Reset & Variable Definitions */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #090d16 0%, #0f172a 100%);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --secondary: #6366f1;
+            --accent: #d946ef;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --glass-bg: rgba(17, 24, 39, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Ambient Glow Blobs in Background */
+        .ambient-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(40px);
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .glow-1 { top: -50px; left: -50px; }
+        .glow-2 { bottom: -50px; right: -50px; background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%); }
+
+        /* Premium Header Styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: rgba(9, 13, 22, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            text-transform: lowercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-logo::after {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* Hamburger Menu Icon Styling */
+        .menu-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03);
+            z-index: 200;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 2px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Hamburger Animation */
+        .menu-btn.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+            background: var(--accent);
+        }
+
+        .menu-btn.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-btn.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+            background: var(--accent);
+        }
+
+        /* Sidebar Navigation Drawer */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100%;
+            background: rgba(9, 13, 22, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid var(--glass-border);
+            z-index: 150;
+            padding: 100px 24px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 140;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-muted);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: var(--text-main);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%);
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .menu-item svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover svg, .menu-item.active svg {
+            stroke: var(--primary);
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+
+        /* Main Container and Routing Views */
+        main {
+            flex: 1;
+            padding: 24px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .view {
+            display: none;
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .view.active-view {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dashboard Screen (order view) */
+        .dashboard-hero {
+            text-align: center;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hero-graphic {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-glow);
+            animation: pulse-effect 2.5s infinite ease-in-out;
+        }
+
+        .hero-icon-container {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            width: 130px;
+            height: 130px;
+            border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.3), inset 0 -5px 15px rgba(0, 0, 0, 0.2);
+            animation: morph-blob 8s infinite alternate ease-in-out;
+        }
+
+        .hero-icon-container svg {
+            width: 60px;
+            height: 60px;
+            stroke: #fff;
+            stroke-width: 1.5;
+            fill: none;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        @keyframes pulse-effect {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.2; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        @keyframes morph-blob {
+            0% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
+            50% { border-radius: 55% 45% 30% 70% / 50% 60% 40% 50%; }
+            100% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
+        }
+
+        .dashboard-hero h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #fff 30%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize;
+        }
+
+        .dashboard-hero p {
+            color: var(--text-muted);
+            font-size: 16px;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        /* Metric Grid in Dashboard */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .metric-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            box-shadow: var(--glass-glow);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.08);
+        }
+
+        .metric-icon {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .metric-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .metric-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .metric-val {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Connection / Google Sheets Status Card Specifics */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+
+        .status-badge.connected {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.disconnected {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            cursor: pointer;
+        }
+
+        .status-badge.disconnected:hover {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        /* Floating Action Button (FAB) + */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4), 0 0 0 0 rgba(139, 92, 246, 0.7);
+            border: none;
+            cursor: pointer;
+            z-index: 110;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fab-pulse 2s infinite;
+        }
+
+        .fab svg {
+            width: 28px;
+            height: 28px;
+            stroke: #fff;
+            stroke-width: 2.5;
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.6);
+        }
+
+        @keyframes fab-pulse {
+            0% { box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4), 0 0 0 0 rgba(139, 92, 246, 0.4); }
+            70% { box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4), 0 0 0 15px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4), 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+
+        /* Order Submission Form Screen (View 2: add-order-view) */
+        .form-container {
+            max-width: 560px;
+            margin: 40px auto;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-glow);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .close-form-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .close-form-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            transform: scale(1.05);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: capitalize;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group label span {
+            color: var(--accent);
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 20px;
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        /* Form Submission Buttons */
+        .form-actions {
+            margin-top: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #fff;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Requests View Screen (View 3: requests-view) */
+        .requests-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .requests-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .requests-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Control Panel: Search, Date Circle & Counter Badge */
+        .control-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: var(--glass-glow);
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-wrapper svg {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 20px 14px 48px;
+            border-radius: 14px;
+            color: var(--text-main);
+            outline: none;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Custom Interactive elements */
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* "دائرة التواريخ" (Circular Date Picker Trigger) */
+        .date-circle-container {
+            position: relative;
+        }
+
+        .date-circle-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1.5px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--primary);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.1);
+            position: relative;
+        }
+
+        .date-circle-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 18px var(--primary-glow);
+            transform: scale(1.05);
+        }
+
+        .date-circle-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* Popover Date Input Styling overlaying the circle button */
+        .date-picker-hidden {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .date-clear-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid var(--bg-gradient);
+            cursor: pointer;
+            z-index: 12;
+        }
+
+        /* "عدد الطلبات" (Request Count Badge) */
+        .count-badge-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 6px 14px;
+            border-radius: 14px;
+        }
+
+        .count-badge-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .count-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Glassmorphic Responsive Table Wrapper */
+        .table-wrapper {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--glass-glow);
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right; /* RTL align */
+        }
+
+        .orders-table th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 18px 24px;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            letter-spacing: 0.5px;
+        }
+
+        .orders-table td {
+            padding: 18px 24px;
+            color: var(--text-main);
+            font-size: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .orders-table tr:hover td {
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .orders-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 60px 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .empty-state h3 {
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Row Action Buttons (WhatsApp/Delete) */
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .row-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .row-btn.wa-btn {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .row-btn.wa-btn:hover {
+            background: var(--success);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .row-btn.delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .row-btn.delete-btn:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .row-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        /* Settings Gear Icon & Modal Setup */
+        .settings-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            box-shadow: var(--glass-glow);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            color: var(--text-main);
+            border-color: var(--primary);
+            transform: rotate(45deg);
+        }
+
+        .settings-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* Overlays & Modals styling */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid var(--glass-border);
+            width: 100%;
+            max-width: 520px;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: var(--text-main);
+            text-align: right;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9) translateY(20px); }
+            to { transform: scale(1) translateY(0); }
+        }
+
+        .modal-card h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-body {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .code-box {
+            background: #090d16;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--primary);
+            overflow-x: auto;
+            white-space: pre;
+            direction: ltr;
+            max-height: 150px;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary-sm {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary-sm:hover {
+            background: var(--secondary);
+        }
+
+        /* Success & Info Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(17, 24, 39, 0.9);
+            border: 1.5px solid var(--primary);
+            padding: 14px 28px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.info { border-color: var(--primary); color: var(--text-main); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+
+        /* Loader inside buttons */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Optimization Media Queries */
+        @media (max-width: 768px) {
+            header {
+                padding: 16px;
+            }
+
+            main {
+                padding: 16px;
+            }
+
+            .dashboard-hero h1 {
+                font-size: 26px;
+            }
+
+            .control-panel {
+                padding: 16px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-right {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .form-container {
+                padding: 24px;
+                margin: 15px auto;
+            }
+
+            /* Responsive Card-like Table on Mobile */
+            .orders-table, .orders-table tbody, .orders-table tr, .orders-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .orders-table thead {
+                display: none; /* Hide header columns on mobile */
+            }
+
+            .orders-table tr {
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid var(--glass-border);
+                border-radius: 18px;
+                margin-bottom: 16px;
+                padding: 16px;
+                position: relative;
+            }
+
+            .orders-table td {
+                border: none;
+                padding: 8px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+                font-size: 14px;
+            }
+
+            .orders-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-muted);
+                margin-right: 15px;
+                text-align: right;
+            }
+
+            .orders-table td.actions-cell {
+                justify-content: flex-end;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                margin-top: 8px;
+                padding-top: 12px;
+            }
+        }
+
+        /* Store and Alerts Custom styling */
+        .store-tab.active {
+            background: var(--primary) !important;
+            color: #fff !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        
+        @keyframes bell-bounce {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-4px) scale(1.08); box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+        }
+        
+        .bell-alert-btn {
+            animation: bell-bounce 1.2s infinite alternate ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Glow Background Blobs -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <!-- Header Navigation Bar -->
+    <header>
+        <div class="header-logo">order</div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <!-- Bell alert trigger -->
+            <button class="bell-alert-btn" id="bell-alert-btn" onclick="openShortfallModal()" aria-label="Inventory Alerts" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1.5px solid rgba(239, 68, 68, 0.3); color: var(--danger); border-radius: 50%; width: 44px; height: 44px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </button>
+            <button class="menu-btn" id="menu-toggle" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Drawer (Right-aligned) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="menu-item active" data-target="order-view">
+            <svg viewBox="0 0 24 24"><path d="M9 22V12h6v10M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span>order</span>
+        </div>
+        <div class="menu-item" data-target="requests-view">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Requests</span>
+        </div>
+        <div class="menu-item" data-target="stor-view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <span>stor</span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- VIEW 1: Order Landing Screen -->
+        <div id="order-view" class="view active-view">
+            <div class="dashboard-hero">
+                <div class="hero-graphic">
+                    <div class="pulse-ring"></div>
+                    <div class="hero-icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                </div>
+                <h1>نظام إدارة الطلبات والطلبيات</h1>
+                <p>قم بإنشاء وتتبع طلبات العملاء وإرسالها بشكل تلقائي وفوري إلى جدول بيانات جوجل شيت الخاص بك.</p>
+            </div>
+
+            <!-- Stats Dashboard Widget Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <div class="metric-val" id="count-total">0</div>
+                        <div class="metric-label">إجمالي الطلبات المستلمة</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="color: var(--accent); background: rgba(217, 70, 239, 0.1);">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <div class="metric-val" id="count-today">0</div>
+                        <div class="metric-label">طلبات اليوم الجديدة</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="color: var(--success); background: rgba(16, 185, 129, 0.1);" id="status-icon">
+                        <svg viewBox="0 0 24 24"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/><path d="M18 8h6v4h-6z"/><path d="M21 12v6a2 2 0 0 1-2 2"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <div class="metric-val" style="font-size: 16px; font-weight: 700;">
+                            <span id="gs-badge" class="status-badge disconnected" onclick="openSettings()">غير متصل</span>
+                        </div>
+                        <div class="metric-label">مزامنة جوجل شيت</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Action Button at Bottom Left -->
+            <button class="fab" id="open-form-fab" aria-label="Add new order" onclick="navigateTo('add-order-view')">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+        </div>
+
+        <!-- VIEW 2: Create Order Form -->
+        <div id="add-order-view" class="view">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>إضافة طلب جديد</h2>
+                    <button class="close-form-btn" onclick="navigateTo('order-view')" aria-label="Cancel">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+
+                <form id="orderForm" onsubmit="handleFormSubmit(event)">
+                    <!-- 1. Customer Name Input -->
+                    <div class="form-group">
+                        <label for="castmoer-input">Customer / العميل <span>*</span></label>
+                        <input type="text" id="castmoer-input" class="form-input" placeholder="اسم العميل الكامل" required autocomplete="name">
+                    </div>
+
+                    <!-- 2. Order Code Input -->
+                    <div class="form-group">
+                        <label for="code-input">code / رمز الطلب <span>*</span></label>
+                        <input type="text" id="code-input" class="form-input" placeholder="مثال: PRD-102" required>
+                    </div>
+
+                    <!-- 3. Quantity Input -->
+                    <div class="form-group">
+                        <label for="qty-input">QTY / الكمية <span>*</span></label>
+                        <input type="number" id="qty-input" class="form-input" min="1" placeholder="مثال: 5" required>
+                    </div>
+
+                    <!-- 4. Phone Number Input -->
+                    <div class="form-group">
+                        <label for="phone-input">number phone / رقم الهاتف <span>*</span></label>
+                        <input type="tel" id="phone-input" class="form-input" placeholder="مثال: +966500000000" required autocomplete="tel">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn" id="submit-btn">
+                            <span id="btn-text">ارسال</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- VIEW 3: Requests Log & Table -->
+        <div id="requests-view" class="view">
+            <div class="requests-container">
+                <div class="requests-header">
+                    <h2>Requests / الطلبات المستلمة</h2>
+                </div>
+
+                <!-- Filters Control Panel -->
+                <div class="control-panel">
+                    <!-- Search Input -->
+                    <div class="search-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="table-search" class="search-input" placeholder="البحث باسم العميل أو الرمز أو الهاتف..." oninput="filterTable()">
+                    </div>
+
+                    <div class="controls-right">
+                        <!-- "دائرة التواريخ" (Circular Date Picker Trigger) -->
+                        <div class="date-circle-container">
+                            <button class="date-circle-btn" title="تصفية حسب التاريخ">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <!-- Clicking the circle button targets the calendar picker under it -->
+                                <input type="date" id="table-date-filter" class="date-picker-hidden" onchange="handleDateFilterChange()">
+                            </button>
+                            <!-- Clear Date Button -->
+                            <div class="date-clear-badge" id="date-clear-btn" onclick="clearDateFilter()" title="إلغاء فلترة التاريخ">✕</div>
+                        </div>
+
+                        <!-- "عدد الطلبات" (Request Count Circle Badge) -->
+                        <div class="count-badge-container">
+                            <span class="count-badge-label">عدد الطلبات:</span>
+                            <div class="count-circle" id="requests-count">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Content -->
+                <div class="table-wrapper">
+                    <table class="orders-table" id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Customer / العميل</th>
+                                <th>Code / الرمز</th>
+                                <th>QTY / الكمية</th>
+                                <th>Number Phone / الهاتف</th>
+                                <th>الوقت والتاريخ</th>
+                                <th style="text-align: left;">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Table Rows injected by JavaScript -->
+                        </tbody>
+                    </table>
+                    <!-- Empty Table State -->
+                    <div id="table-empty-state" class="empty-state" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        <h3>لا توجد طلبات مسجلة</h3>
+                        <p>ابدأ بإضافة طلبات جديدة عبر زر الإضافة (+).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: Store / المخزن -->
+        <div id="stor-view" class="view">
+            <div class="requests-container">
+                <div class="requests-header">
+                    <h2>stor / المخزن</h2>
+                </div>
+
+                <!-- Store Category tabs at the top -->
+                <div class="store-tabs-wrapper" style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 8px;">
+                    <button class="store-tab active" onclick="switchStoreTab('FLOORING')" style="flex: 1; min-width: 110px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 14px; text-transform: uppercase;">FLOORING</button>
+                    <button class="store-tab" onclick="switchStoreTab('WALLPAPER')" style="flex: 1; min-width: 110px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 14px; text-transform: uppercase;">WALLPAPER</button>
+                    <button class="store-tab" onclick="switchStoreTab('PVC WOOD')" style="flex: 1; min-width: 110px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 14px; text-transform: uppercase;">PVC WOOD</button>
+                    <button class="store-tab" onclick="switchStoreTab('CURTAINS')" style="flex: 1; min-width: 110px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 14px; text-transform: uppercase;">CURTAINS</button>
+                </div>
+
+                <!-- Search Bar next to plus (+) button -->
+                <div class="control-panel" style="margin-bottom: 20px; display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 20px;">
+                    <div class="search-wrapper" style="flex: 1; min-width: 200px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="store-search" class="search-input" placeholder="البحث برقم المنتج..." oninput="filterStoreTable()">
+                    </div>
+                    
+                    <!-- Add item to store trigger button -->
+                    <button onclick="openAddStoreItemModal()" style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; color: white; box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);" title="إضافة منتج للمخزن">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                </div>
+
+                <!-- Store inventory list -->
+                <div class="table-wrapper">
+                    <table class="orders-table" id="store-table">
+                        <thead>
+                            <tr>
+                                <th>رقم المنتج</th>
+                                <th>الكمية المتوفرة</th>
+                                <th>سعر الوحدة</th>
+                                <th style="text-align: left;">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="store-table-body">
+                            <!-- Store items rendered here -->
+                        </tbody>
+                    </table>
+                    <!-- Empty Store category state -->
+                    <div id="store-empty-state" class="empty-state" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        <h3>لا توجد منتجات مسجلة في هذا القسم</h3>
+                        <p>اضغط على زر الإضافة (+) لإدخل المنتجات وكمياتها.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Store Item Modal -->
+    <div class="modal" id="add-store-item-modal">
+        <div class="modal-card">
+            <h3 style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 22px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                إضافة منتج للمخزن
+            </h3>
+            <div class="modal-body" style="gap: 16px; margin-top: 15px;">
+                <p style="font-size: 13px; color: var(--text-muted);">الرجاء إدخال رقم المنتج والكمية لإضافتها إلى المخزن الحالي في قسم <strong id="modal-active-cat" style="color: var(--accent);"></strong>:</p>
+                
+                <form id="storeForm" onsubmit="handleStoreFormSubmit(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="store-prod-code">رقم المنتج / Code <span>*</span></label>
+                        <input type="text" id="store-prod-code" class="form-input" placeholder="مثال: PRD-102" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="store-prod-qty">كمية المنتج / QTY <span>*</span></label>
+                        <input type="number" id="store-prod-qty" class="form-input" min="0" placeholder="مثال: 50" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="store-prod-price">سعر الكمية الواحدة / Unit Price <span>*</span></label>
+                        <input type="number" id="store-prod-price" class="form-input" min="0" step="0.01" placeholder="مثال: 15.5" required>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 15px;">
+                        <button type="button" class="btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-main);" onclick="closeAddStoreItemModal()">إلغاء</button>
+                        <button type="submit" class="btn-sm btn-primary-sm" style="padding: 10px 20px;">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shortfall Inventory Alert Modal -->
+    <div class="modal" id="shortfall-modal">
+        <div class="modal-card" style="border-color: var(--danger);">
+            <h3 style="color: var(--danger); display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 22px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                تنبيهات نقص المخزون
+            </h3>
+            <div class="modal-body" style="gap: 16px; margin-top: 15px;">
+                <p style="color: var(--text-muted); font-size: 13px;">الطلبات التالية تم تمريرها ولكن كمية الطلب كانت أكبر من الكمية المتوفرة في المخزن:</p>
+                
+                <div id="shortfall-list-container" style="display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-left: 4px;">
+                    <!-- Dynamic shortfall alert cards injected by JS -->
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="btn-sm" style="background: var(--danger); color: white;" onclick="clearShortfalls()">مسح كافة التنبيهات</button>
+                <button class="btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-main);" onclick="closeShortfallModal()">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Trigger Button (Bottom-Right) -->
+    <button class="settings-btn" onclick="openSettings()" aria-label="Open settings" title="إعدادات جوجل شيت">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+
+    <!-- Google Sheet Configuration Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-card">
+            <h3>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                ربط Google Sheet
+            </h3>
+            <div class="modal-body">
+                <p>لتفعيل المزامنة التلقائية مع Google Sheet، الرجاء إدخال رابط Web App من Apps Script:</p>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="url" id="google-sheet-url" class="form-input" placeholder="https://script.google.com/macros/s/.../exec" style="direction: ltr;">
+                </div>
+                
+                <h4 style="color: var(--text-main); font-weight: 700; margin-top: 8px;">خطوات الإعداد:</h4>
+                <ol style="padding-right: 20px; font-size: 13px; display: flex; flex-direction: column; gap: 6px;">
+                    <li>أنشئ جدول بيانات جديد في Google Sheets.</li>
+                    <li>من القائمة العلوية، اختر <strong>Extensions</strong> ثم <strong>Apps Script</strong>.</li>
+                    <li>انسخ الكود البرمجي أدناه واستبدل به الكود الموجود:</li>
+                </ol>
+                
+                <div class="code-box" id="script-code-box"></div>
+                <button class="btn-sm btn-primary-sm" onclick="copyAppsScriptCode()" id="copy-script-btn" style="align-self: flex-start; margin-top: -5px;">نسخ الكود</button>
+
+                <ol start="4" style="padding-right: 20px; font-size: 13px; display: flex; flex-direction: column; gap: 6px;">
+                    <li>انقر على <strong>Deploy</strong> &gt; <strong>New Deployment</strong>.</li>
+                    <li>اختر <strong>Web App</strong> كنوع للنشر.</li>
+                    <li>اضبط خيار <strong>Execute as</strong> على <u>Me</u> وخيار <strong>Who has access</strong> على <u>Anyone</u>.</li>
+                    <li>انقر <strong>Deploy</strong>، وافق على الأذونات، ثم انسخ الرابط والصقه في الحقل أعلاه.</li>
+                </ol>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-main);" onclick="closeSettings()">إلغاء</button>
+                <button class="btn-sm btn-primary-sm" onclick="saveSettings()">حفظ وإغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen overlay Toast Messages -->
+    <div class="toast" id="toast-notify">
+        <!-- Icon injected by JS -->
+        <span id="toast-message">تم إرسال الطلب بنجاح!</span>
+    </div>
+
+    <!-- Core Business & UI Javascript Logic -->
+    <script>
+        // State Management
+        let ordersList = [];
+        let dateFilterVal = '';
+        
+        // Store Inventory & Alert States
+        let storeInventory = {
+            'FLOORING': {},
+            'WALLPAPER': {},
+            'PVC WOOD': {},
+            'CURTAINS': {}
+        };
+        let activeStoreTab = 'FLOORING';
+        let shortfallsList = [];
+
+        // Google Apps Script source code snippet
+        const scriptCodeContent = `function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    
+    sheet.appendRow([
+      data.datetime,
+      data.customer,
+      data.code,
+      data.qty,
+      data.phone
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader("Access-Control-Allow-Origin", "*");
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader("Access-Control-Allow-Origin", "*");
+  }
+}`;
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedOrders();
+            loadStoreData(); // Load local storage store inventory & alerts
+            loadSettings();
+            initSidebarNavigation();
+            
+            // Inject Script Code in configuration guide
+            document.getElementById('script-code-box').innerText = scriptCodeContent;
+            
+            updateDashboardMetrics();
+            renderTable();
+        });
+
+        // 1. Sidebar Drawer Controls
+        const menuToggleBtn = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        menuToggleBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        function toggleSidebar() {
+            menuToggleBtn.classList.toggle('open');
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            menuToggleBtn.classList.remove('open');
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        }
+
+        function initSidebarNavigation() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetViewId = item.getAttribute('data-target');
+                    
+                    // Update active state in sidebar
+                    menuItems.forEach(m => m.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    navigateTo(targetViewId);
+                    closeSidebar();
+                });
+            });
+        }
+
+        // SPA Navigation Helper
+        function navigateTo(viewId) {
+            // Hide all views
+            const views = document.querySelectorAll('.view');
+            views.forEach(v => v.classList.remove('active-view'));
+
+            // Show target view
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.add('active-view');
+            }
+
+            // Sync menu active state if navigated from elsewhere (like fab/cancel buttons)
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                const target = item.getAttribute('data-target');
+                if (target === viewId || (viewId === 'add-order-view' && target === 'order-view')) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            // Switch triggers for specific views
+            if (viewId === 'stor-view') {
+                renderStoreTable();
+            }
+        }
+
+        // Load & Save Orders Database
+        function loadSavedOrders() {
+            const stored = localStorage.getItem('orders_db');
+            if (stored) {
+                ordersList = JSON.parse(stored);
+                // Filter out any previous mock demo orders to clear the list completely
+                ordersList = ordersList.filter(o => o.id !== 1716550000000 && o.id !== 1716550100000 && o.id !== 1716550200000);
+            }
+        }
+
+        function saveOrders() {
+            localStorage.setItem('orders_db', JSON.stringify(ordersList));
+            updateDashboardMetrics();
+        }
+
+        // Dashboard Metrics update
+        function updateDashboardMetrics() {
+            document.getElementById('count-total').innerText = ordersList.length;
+            document.getElementById('requests-count').innerText = ordersList.length;
+
+            // Calculate today's orders
+            const todayStr = new Date().toLocaleDateString('ar-EG');
+            const todayEngStr = new Date().toLocaleDateString('en-US');
+            
+            const todayCount = ordersList.filter(o => {
+                // Matches standard arab date locale or default system date
+                return o.datetime.includes(todayStr) || o.datetime.includes(todayEngStr);
+            }).length;
+
+            document.getElementById('count-today').innerText = todayCount;
+        }
+
+        // Settings / Google Sheet Config Management
+        function loadSettings() {
+            let sheetUrl = localStorage.getItem('googleSheetUrl');
+            
+            // Set user's provided URL as the default connection URL
+            const defaultUrl = 'https://script.google.com/macros/s/AKfycbw0QW-P9nfRQRrwIAmwca1wvbH8ZgpM5aUoQK8AlnWrhFN4pxC85Tw7YbNfHCQ5CrzS/exec';
+            if (sheetUrl === null) {
+                localStorage.setItem('googleSheetUrl', defaultUrl);
+                sheetUrl = defaultUrl;
+            }
+            
+            const gUrlInput = document.getElementById('google-sheet-url');
+            const gsBadge = document.getElementById('gs-badge');
+            
+            if (sheetUrl) {
+                gUrlInput.value = sheetUrl;
+                gsBadge.innerText = "متصل";
+                gsBadge.className = "status-badge connected";
+            } else {
+                gsBadge.innerText = "غير متصل";
+                gsBadge.className = "status-badge disconnected";
+            }
+        }
+
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('show');
+            closeSidebar();
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('show');
+        }
+
+        function saveSettings() {
+            const urlInput = document.getElementById('google-sheet-url').value.trim();
+            if (urlInput === '') {
+                localStorage.removeItem('googleSheetUrl');
+                showToast('تم إزالة رابط Google Sheets', 'info');
+            } else {
+                localStorage.setItem('googleSheetUrl', urlInput);
+                showToast('تم حفظ إعدادات الاتصال بنجاح!', 'success');
+            }
+            loadSettings();
+            closeSettings();
+        }
+
+        function copyAppsScriptCode() {
+            navigator.clipboard.writeText(scriptCodeContent).then(() => {
+                const btn = document.getElementById('copy-script-btn');
+                btn.innerText = "تم النسخ ✓";
+                btn.style.background = "var(--success)";
+                setTimeout(() => {
+                    btn.innerText = "نسخ الكود";
+                    btn.style.background = "var(--primary)";
+                }, 2000);
+            }).catch(err => {
+                showToast('حدث خطأ أثناء النسخ', 'error');
+            });
+        }
+
+        // Add Order Submission Handler
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const customerInput = document.getElementById('castmoer-input');
+            const codeInput = document.getElementById('code-input');
+            const qtyInput = document.getElementById('qty-input');
+            const phoneInput = document.getElementById('phone-input');
+            const submitBtn = document.getElementById('submit-btn');
+
+            // Format current date and time
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-EG');
+            const timeStr = now.toLocaleTimeString('ar-EG');
+            const datetimeFormatted = `${dateStr} ${timeStr}`;
+
+            const orderData = {
+                id: Date.now(),
+                customer: customerInput.value.trim(),
+                code: codeInput.value.trim(),
+                qty: qtyInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                datetime: datetimeFormatted
+            };
+
+            // 1. Add to local cache first
+            ordersList.unshift(orderData); // Add to the top
+            saveOrders();
+            renderTable();
+
+            // 1.5 Deduct from store inventory and check for shortfall alerts
+            const orderedQty = parseInt(orderData.qty) || 0;
+            let foundInStore = false;
+            let availableQty = 0;
+            let foundCat = '';
+            let unitPrice = 0;
+
+            for (const cat in storeInventory) {
+                if (storeInventory[cat] && storeInventory[cat].hasOwnProperty(orderData.code)) {
+                    foundInStore = true;
+                    const item = storeInventory[cat][orderData.code];
+                    if (typeof item === 'object' && item !== null) {
+                        availableQty = parseInt(item.qty) || 0;
+                        unitPrice = parseFloat(item.price) || 0;
+                    } else {
+                        availableQty = parseInt(item) || 0;
+                        unitPrice = 0;
+                    }
+                    foundCat = cat;
+                    break;
+                }
+            }
+
+            const totalPrice = orderedQty * unitPrice;
+            orderData.totalPrice = totalPrice;
+
+            if (foundInStore) {
+                // Deduct inventory and clamp to 0
+                const item = storeInventory[foundCat][orderData.code];
+                if (typeof item === 'object' && item !== null) {
+                    item.qty = Math.max(0, availableQty - orderedQty);
+                } else {
+                    storeInventory[foundCat][orderData.code] = Math.max(0, availableQty - orderedQty);
+                }
+            }
+
+            // Check if the order requests more than what is available (or if not found, availableQty is 0)
+            if (orderedQty > availableQty) {
+                const missingQty = orderedQty - availableQty;
+                
+                // Add shortfall alert card to the list
+                shortfallsList.unshift({
+                    code: orderData.code,
+                    requested: orderedQty,
+                    available: availableQty,
+                    missing: missingQty,
+                    timestamp: Date.now()
+                });
+            }
+            saveStoreData();
+
+            // Show button loader feedback
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div>';
+
+            // 2. Google Sheet Sync Trigger
+            const gsUrl = localStorage.getItem('googleSheetUrl');
+            if (gsUrl) {
+                fetch(gsUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', // Bypasses standard CORS issues seamlessly
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                })
+                .then(() => {
+                    showToast('تم إرسال الطلب بنجاح ومزامنته!', 'success');
+                    resetFormAndReturn();
+                })
+                .catch(err => {
+                    console.error('Google Sheet Sync Error:', err);
+                    showToast('تم حفظ الطلب محلياً (حدث خطأ أثناء مزامنة جوجل شيت)', 'warning');
+                    resetFormAndReturn();
+                });
+            } else {
+                // No URL configured, saved locally only
+                setTimeout(() => {
+                    showToast('تم حفظ الطلب محلياً! (قم بربط جوجل شيت لمزامنة أسرع)', 'info');
+                    resetFormAndReturn();
+                }, 800);
+            }
+
+            function resetFormAndReturn() {
+                // Reset inputs
+                customerInput.value = '';
+                codeInput.value = '';
+                qtyInput.value = '';
+                phoneInput.value = '';
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+
+                // Return to landing page
+                navigateTo('order-view');
+            }
+        }
+
+        // Table Rendering Engine
+        function renderTable(filterQuery = '', filterDate = '') {
+            const tbody = document.getElementById('table-body');
+            const emptyState = document.getElementById('table-empty-state');
+            const tableElement = document.getElementById('orders-table');
+            
+            tbody.innerHTML = '';
+            
+            // Filter orders based on query search & date selection
+            const filtered = ordersList.filter(order => {
+                const matchesSearch = 
+                    order.customer.toLowerCase().includes(filterQuery.toLowerCase()) ||
+                    order.code.toLowerCase().includes(filterQuery.toLowerCase()) ||
+                    order.phone.toLowerCase().includes(filterQuery.toLowerCase());
+                
+                let matchesDate = true;
+                if (filterDate) {
+                    // Check if date components match
+                    // Standard ISO format is YYYY-MM-DD. Local date string is usually DD/MM/YYYY or MM/DD/YYYY
+                    const [y, m, d] = filterDate.split('-');
+                    
+                    // Simple check if year, month, or day are in the datetime field
+                    // Format check helper: converts both parts to comparable numbers
+                    const localDateMatch = order.datetime.includes(parseInt(d)) && 
+                                           order.datetime.includes(parseInt(m)) && 
+                                           order.datetime.includes(y);
+                    matchesDate = localDateMatch;
+                }
+                
+                return matchesSearch && matchesDate;
+            });
+
+            // Update local count badge inside the requests page
+            document.getElementById('requests-count').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                tableElement.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            tableElement.style.display = 'table';
+            emptyState.style.display = 'none';
+
+            filtered.forEach(order => {
+                const tr = document.createElement('tr');
+                
+                // Format clean numbers for phone link
+                const cleanPhone = order.phone.replace(/\D/g, '');
+                
+                tr.innerHTML = `
+                    <td data-label="Customer / العميل">${escapeHtml(order.customer)}</td>
+                    <td data-label="Code / الرمز"><code>${escapeHtml(order.code)}</code></td>
+                    <td data-label="QTY / الكمية">
+                        ${escapeHtml(order.qty)}
+                        ${(order.totalPrice !== undefined && order.totalPrice !== null) ? `
+                            <div style="font-size: 11px; color: var(--accent); margin-top: 6px; font-weight: 700; background: rgba(217, 70, 239, 0.08); padding: 2px 8px; border-radius: 8px; display: inline-block; border: 1px solid rgba(217, 70, 239, 0.15); box-shadow: 0 0 8px rgba(217, 70, 239, 0.1);">
+                                السعر الكلي: ${order.totalPrice}
+                            </div>
+                        ` : ''}
+                    </td>
+                    <td data-label="Number Phone / الهاتف">
+                        <a href="tel:${order.phone}" style="color: var(--secondary); text-decoration: none;">${escapeHtml(order.phone)}</a>
+                    </td>
+                    <td data-label="الوقت والتاريخ">${escapeHtml(order.datetime)}</td>
+                    <td class="actions-cell">
+                        <!-- WhatsApp Direct Message Quick-Action -->
+                        <button class="row-btn wa-btn" onclick="openWhatsApp('${cleanPhone}', '${escapeHtml(order.customer)}', '${escapeHtml(order.code)}')" title="مراسلة عبر واتساب">
+                            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        </button>
+                        <!-- Delete row item -->
+                        <button class="row-btn delete-btn" onclick="deleteOrder(${order.id})" title="حذف الطلب">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Filter Table Inputs trigger
+        function filterTable() {
+            const query = document.getElementById('table-search').value;
+            renderTable(query, dateFilterVal);
+        }
+
+        function handleDateFilterChange() {
+            const dateInput = document.getElementById('table-date-filter');
+            const clearBtn = document.getElementById('date-clear-btn');
+            
+            dateFilterVal = dateInput.value;
+            
+            if (dateFilterVal) {
+                clearBtn.style.display = 'flex';
+                // Trigger visual color change to green/indigo on active filter
+                document.querySelector('.date-circle-btn').style.background = 'var(--primary)';
+                document.querySelector('.date-circle-btn').style.color = '#fff';
+            } else {
+                clearBtn.style.display = 'none';
+                document.querySelector('.date-circle-btn').style.background = 'rgba(139, 92, 246, 0.1)';
+                document.querySelector('.date-circle-btn').style.color = 'var(--primary)';
+            }
+            
+            filterTable();
+        }
+
+        function clearDateFilter() {
+            document.getElementById('table-date-filter').value = '';
+            dateFilterVal = '';
+            document.getElementById('date-clear-btn').style.display = 'none';
+            document.querySelector('.date-circle-btn').style.background = 'rgba(139, 92, 246, 0.1)';
+            document.querySelector('.date-circle-btn').style.color = 'var(--primary)';
+            filterTable();
+        }
+
+        // Delete Row Operation
+        function deleteOrder(id) {
+            if(confirm("هل أنت متأكد من رغبتك في حذف هذا الطلب؟")) {
+                ordersList = ordersList.filter(o => o.id !== id);
+                saveOrders();
+                filterTable();
+                showToast('تم حذف الطلب بنجاح', 'info');
+            }
+        }
+
+        // WhatsApp Integrator helper
+        function openWhatsApp(phone, customer, code) {
+            const message = `مرحباً ${customer}، لقد تلقينا طلبك للمنتج ذو الرمز ${code}. شكراً لتسوقك معنا!`;
+            const encoded = encodeURIComponent(message);
+            window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
+        }
+
+        // Custom Notification Toast Display
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notify');
+            const msgSpan = document.getElementById('toast-message');
+            
+            let iconSvg = '';
+            if (type === 'success') {
+                toast.className = 'toast success';
+                iconSvg = `<svg viewBox="0 0 24 24" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+            } else if (type === 'error') {
+                toast.className = 'toast error';
+                iconSvg = `<svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+            } else {
+                toast.className = 'toast info';
+                iconSvg = `<svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+            }
+
+            toast.innerHTML = iconSvg + `<span id="toast-message">${message}</span>`;
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // Store Inventory & Shortfall Alerts Helper Operations
+        function loadStoreData() {
+            const stored = localStorage.getItem('store_inventory');
+            if (stored) {
+                storeInventory = JSON.parse(stored);
+            } else {
+                storeInventory = {
+                    'FLOORING': {},
+                    'WALLPAPER': {},
+                    'PVC WOOD': {},
+                    'CURTAINS': {}
+                };
+            }
+            
+            const storedShortfalls = localStorage.getItem('store_shortfalls');
+            if (storedShortfalls) {
+                shortfallsList = JSON.parse(storedShortfalls);
+            } else {
+                shortfallsList = [];
+            }
+            
+            updateBellAlertStatus();
+        }
+
+        function saveStoreData() {
+            localStorage.setItem('store_inventory', JSON.stringify(storeInventory));
+            localStorage.setItem('store_shortfalls', JSON.stringify(shortfallsList));
+            updateBellAlertStatus();
+        }
+
+        function updateBellAlertStatus() {
+            const bellBtn = document.getElementById('bell-alert-btn');
+            if (bellBtn) {
+                if (shortfallsList.length > 0) {
+                    bellBtn.style.display = 'flex';
+                } else {
+                    bellBtn.style.display = 'none';
+                }
+            }
+        }
+
+        // Store active category switcher
+        function switchStoreTab(catName) {
+            activeStoreTab = catName;
+            
+            const tabs = document.querySelectorAll('.store-tab');
+            tabs.forEach(tab => {
+                if (tab.innerText.trim().toUpperCase() === catName.trim().toUpperCase()) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            renderStoreTable();
+        }
+
+        // Store items rendering engine
+        function renderStoreTable(filterQuery = '') {
+            const tbody = document.getElementById('store-table-body');
+            const emptyState = document.getElementById('store-empty-state');
+            const tableElement = document.getElementById('store-table');
+            
+            tbody.innerHTML = '';
+            
+            const catInventory = storeInventory[activeStoreTab] || {};
+            const codes = Object.keys(catInventory);
+            
+            const filteredCodes = codes.filter(code => {
+                return code.toLowerCase().includes(filterQuery.toLowerCase());
+            });
+            
+            if (filteredCodes.length === 0) {
+                tableElement.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+            
+            tableElement.style.display = 'table';
+            emptyState.style.display = 'none';
+            
+            filteredCodes.forEach(code => {
+                const item = catInventory[code];
+                let qty = 0;
+                let price = 0;
+                if (typeof item === 'object' && item !== null) {
+                    qty = item.qty;
+                    price = item.price;
+                } else {
+                    qty = item;
+                }
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td data-label="رقم المنتج"><code>${escapeHtml(code)}</code></td>
+                    <td data-label="الكمية المتوفرة"><strong style="color: var(--success); font-size:16px;">${qty}</strong></td>
+                    <td data-label="سعر الوحدة">
+                        <strong style="color: var(--accent); font-size:15px; background: rgba(217, 70, 239, 0.08); padding: 4px 10px; border-radius: 10px; border: 1px solid rgba(217, 70, 239, 0.15); display: inline-block;">${price}</strong>
+                    </td>
+                    <td class="actions-cell">
+                        <button class="row-btn delete-btn" onclick="deleteStoreItem('${escapeHtml(code)}')" title="حذف من المخزن">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterStoreTable() {
+            const query = document.getElementById('store-search').value;
+            renderStoreTable(query);
+        }
+
+        // Modals management for store items addition
+        function openAddStoreItemModal() {
+            document.getElementById('modal-active-cat').innerText = activeStoreTab;
+            document.getElementById('add-store-item-modal').classList.add('show');
+        }
+
+        function closeAddStoreItemModal() {
+            document.getElementById('add-store-item-modal').classList.remove('show');
+            document.getElementById('store-prod-code').value = '';
+            document.getElementById('store-prod-qty').value = '';
+            document.getElementById('store-prod-price').value = '';
+        }
+
+        function handleStoreFormSubmit(e) {
+            e.preventDefault();
+            
+            const codeInput = document.getElementById('store-prod-code');
+            const qtyInput = document.getElementById('store-prod-qty');
+            const priceInput = document.getElementById('store-prod-price');
+            
+            const code = codeInput.value.trim();
+            const qty = parseInt(qtyInput.value.trim()) || 0;
+            const price = parseFloat(priceInput.value.trim()) || 0;
+            
+            if (!storeInventory[activeStoreTab]) {
+                storeInventory[activeStoreTab] = {};
+            }
+            
+            storeInventory[activeStoreTab][code] = { qty: qty, price: price };
+            saveStoreData();
+            
+            showToast('تم حفظ المنتج في المخزن بنجاح!', 'success');
+            closeAddStoreItemModal();
+            renderStoreTable();
+        }
+
+        function deleteStoreItem(code) {
+            if (confirm(`هل أنت متأكد من حذف المنتج "${code}" من هذا القسم بالمخزن؟`)) {
+                if (storeInventory[activeStoreTab] && storeInventory[activeStoreTab].hasOwnProperty(code)) {
+                    delete storeInventory[activeStoreTab][code];
+                    saveStoreData();
+                    renderStoreTable();
+                    showToast('تم حذف المنتج من المخزن بنجاح', 'info');
+                }
+            }
+        }
+
+        // Inventory shortage modal displays
+        function openShortfallModal() {
+            const container = document.getElementById('shortfall-list-container');
+            container.innerHTML = '';
+            
+            shortfallsList.forEach((alert, index) => {
+                const card = document.createElement('div');
+                card.style.background = 'rgba(255, 255, 255, 0.02)';
+                card.style.border = '1px solid var(--glass-border)';
+                card.style.borderRadius = '16px';
+                card.style.padding = '16px';
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.style.gap = '8px';
+                
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; direction: rtl;">
+                        <strong style="color:var(--text-main); font-size:15px;">رقم المنتج: <code style="color:var(--accent); background:rgba(217,70,239,0.1); padding:2px 6px; border-radius:6px; font-family:monospace;">${escapeHtml(alert.code)}</code></strong>
+                        <button class="row-btn delete-btn" onclick="removeShortfall(${index})" style="width:28px; height:28px; border-radius:6px;" title="مسح التنبيه">✕</button>
+                    </div>
+                    <div style="display:flex; gap:20px; font-size:13px; color:var(--text-muted); direction: rtl; margin-top: 4px;">
+                        <span>الكمية المتوفرة بالمخزن: <strong style="color:var(--success); font-weight:700;">${alert.available}</strong></span>
+                        <span>كمية الطلب: <strong style="color:var(--warning); font-weight:700;">${alert.requested}</strong></span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top:8px; margin-top:4px; font-size:14px; font-weight:700; color:var(--text-main); display:flex; justify-content:space-between; direction: rtl;">
+                        <span>الكمية الناقصة: <span style="color:var(--danger); font-size:16px; font-weight:800;">${alert.missing}</span></span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            
+            document.getElementById('shortfall-modal').classList.add('show');
+        }
+
+        function closeShortfallModal() {
+            document.getElementById('shortfall-modal').classList.remove('show');
+        }
+
+        function removeShortfall(index) {
+            shortfallsList.splice(index, 1);
+            saveStoreData();
+            if (shortfallsList.length === 0) {
+                closeShortfallModal();
+            } else {
+                openShortfallModal();
+            }
+        }
+
+        function clearShortfalls() {
+            shortfallsList = [];
+            saveStoreData();
+            closeShortfallModal();
+            showToast('تم مسح جميع التنبيهات بنجاح', 'info');
+        }
+
+        // Utility: Prevents HTML injection
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;')
+                             .replace(/</g, '&lt;')
+                             .replace(/>/g, '&gt;')
+                             .replace(/"/g, '&quot;')
+                             .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+
+</html>
