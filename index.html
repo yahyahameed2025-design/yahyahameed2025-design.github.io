@@ -1187,6 +1187,47 @@
         .bell-alert-btn {
             animation: bell-bounce 1.2s infinite alternate ease-in-out;
         }
+
+        /* LTR adjustments for English language support */
+        html[dir="ltr"] .sidebar {
+            right: auto;
+            left: -100%;
+            border-left: none;
+            border-right: 1px solid var(--glass-border);
+        }
+        html[dir="ltr"] .sidebar.open {
+            left: 0;
+            right: auto;
+        }
+        html[dir="ltr"] .modal-card {
+            text-align: left;
+        }
+        html[dir="ltr"] .search-wrapper svg {
+            left: auto;
+            right: 18px;
+        }
+        html[dir="ltr"] .search-input {
+            padding: 14px 48px 14px 20px;
+        }
+        html[dir="ltr"] .close-form-btn {
+            order: 2;
+        }
+        html[dir="ltr"] .form-header h2 {
+            order: 1;
+        }
+        html[dir="ltr"] .actions-cell {
+            justify-content: flex-start;
+        }
+        html[dir="ltr"] .orders-table th, 
+        html[dir="ltr"] .orders-table td {
+            text-align: left;
+        }
+        html[dir="ltr"] .date-circle-container {
+            order: 2;
+        }
+        html[dir="ltr"] .count-badge-container {
+            order: 1;
+        }
     </style>
 </head>
 
@@ -1216,15 +1257,21 @@
     <aside class="sidebar" id="sidebar">
         <div class="menu-item active" data-target="order-view">
             <svg viewBox="0 0 24 24"><path d="M9 22V12h6v10M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-            <span>order</span>
+            <span data-translate="menuHome">الرئيسية / order</span>
         </div>
         <div class="menu-item" data-target="requests-view">
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            <span>Requests</span>
+            <span data-translate="menuRequests">الطلبات المستلمة / Requests</span>
         </div>
         <div class="menu-item" data-target="stor-view">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-            <span>stor</span>
+            <span data-translate="menuStore">المخزن / stor</span>
+        </div>
+        
+        <!-- Language Toggle Button in Sidebar -->
+        <div class="menu-item" id="lang-toggle-btn" onclick="toggleLanguage()" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span id="lang-text">English</span>
         </div>
     </aside>
 
@@ -1243,8 +1290,8 @@
                         </svg>
                     </div>
                 </div>
-                <h1>نظام إدارة الطلبات والطلبيات</h1>
-                <p>قم بإنشاء وتتبع طلبات العملاء وإرسالها بشكل تلقائي وفوري إلى جدول بيانات جوجل شيت الخاص بك.</p>
+                <h1 data-translate="dashboardTitle">نظام إدارة الطلبات والطلبيات</h1>
+                <p data-translate="dashboardDesc">قم بإنشاء وتتبع طلبات العملاء وإرسالها بشكل تلقائي وفوري إلى جدول بيانات جوجل شيت الخاص بك.</p>
             </div>
 
             <!-- Stats Dashboard Widget Cards -->
@@ -1255,7 +1302,7 @@
                     </div>
                     <div class="metric-info">
                         <div class="metric-val" id="count-total">0</div>
-                        <div class="metric-label">إجمالي الطلبات المستلمة</div>
+                        <div class="metric-label" data-translate="totalOrders">إجمالي الطلبات المستلمة</div>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -1264,7 +1311,7 @@
                     </div>
                     <div class="metric-info">
                         <div class="metric-val" id="count-today">0</div>
-                        <div class="metric-label">طلبات اليوم الجديدة</div>
+                        <div class="metric-label" data-translate="todayOrders">طلبات اليوم الجديدة</div>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -1273,9 +1320,9 @@
                     </div>
                     <div class="metric-info">
                         <div class="metric-val" style="font-size: 16px; font-weight: 700;">
-                            <span id="gs-badge" class="status-badge disconnected" onclick="openSettings()">غير متصل</span>
+                            <span id="gs-badge" class="status-badge disconnected" onclick="openSettings()" data-translate="disconnected">غير متصل</span>
                         </div>
-                        <div class="metric-label">مزامنة جوجل شيت</div>
+                        <div class="metric-label" data-translate="gsSync">مزامنة جوجل شيت</div>
                     </div>
                 </div>
             </div>
@@ -1619,6 +1666,7 @@
 
             updateDashboardMetrics();
             renderTable();
+            applyLanguage();
         });
 
         // 1. Sidebar Drawer Controls
@@ -1734,10 +1782,10 @@
             
             if (sheetUrl) {
                 gUrlInput.value = sheetUrl;
-                gsBadge.innerText = "متصل";
+                gsBadge.innerText = (typeof currentLang !== 'undefined' && currentLang === 'EN') ? "Connected" : "متصل";
                 gsBadge.className = "status-badge connected";
             } else {
-                gsBadge.innerText = "غير متصل";
+                gsBadge.innerText = (typeof currentLang !== 'undefined' && currentLang === 'EN') ? "Disconnected" : "غير متصل";
                 gsBadge.className = "status-badge disconnected";
             }
         }
@@ -2466,6 +2514,89 @@
                              .replace(/>/g, '&gt;')
                              .replace(/"/g, '&quot;')
                              .replace(/'/g, '&#039;');
+        }
+
+        // Translation Engine Definitions
+        let currentLang = 'AR';
+        const translations = {
+            AR: {
+                menuHome: 'الرئيسية / order',
+                menuRequests: 'الطلبات المستلمة / Requests',
+                menuStore: 'المخزن / stor',
+                langText: 'English',
+                dashboardTitle: 'نظام إدارة الطلبات والطلبيات',
+                dashboardDesc: 'قم بإنشاء وتتبع طلبات العملاء وإرسالها بشكل تلقائي وفوري إلى جدول بيانات جوجل شيت الخاص بك.',
+                totalOrders: 'إجمالي الطلبات المستلمة',
+                todayOrders: 'طلبات اليوم الجديدة',
+                gsSync: 'مزامنة جوجل شيت',
+                disconnected: 'غير متصل',
+                connected: 'متصل'
+            },
+            EN: {
+                menuHome: 'Home',
+                menuRequests: 'Requests Log',
+                menuStore: 'Inventory / Store',
+                langText: 'العربية',
+                dashboardTitle: 'Order & Inventory System',
+                dashboardDesc: 'Create and track customer orders and instantly sync them to your Google Sheets spreadsheet automatically.',
+                totalOrders: 'Total Orders Received',
+                todayOrders: 'New Orders Today',
+                gsSync: 'Google Sheets Sync',
+                disconnected: 'Disconnected',
+                connected: 'Connected'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'AR') ? 'EN' : 'AR';
+            localStorage.setItem('appLanguage', currentLang);
+            applyLanguage();
+            closeSidebar();
+        }
+
+        function applyLanguage() {
+            const savedLang = localStorage.getItem('appLanguage');
+            if (savedLang) {
+                currentLang = savedLang;
+            }
+
+            const dict = translations[currentLang];
+            
+            // Set text for elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (dict[key]) {
+                    el.innerText = dict[key];
+                }
+            });
+
+            // Set document direction and language code
+            document.documentElement.dir = (currentLang === 'AR') ? 'rtl' : 'ltr';
+            document.documentElement.lang = (currentLang === 'AR') ? 'ar' : 'en';
+
+            // Set lang text inside side menu
+            const langTextEl = document.getElementById('lang-text');
+            if (langTextEl) {
+                langTextEl.innerText = dict.langText;
+            }
+
+            // Translate placeholders dynamically
+            const searchInput = document.getElementById('table-search');
+            if (searchInput) {
+                searchInput.placeholder = (currentLang === 'AR') ? 
+                    'البحث باسم العميل أو الرمز أو الهاتف...' : 
+                    'Search by customer, code or phone...';
+            }
+
+            const storeSearchInput = document.getElementById('store-search');
+            if (storeSearchInput) {
+                storeSearchInput.placeholder = (currentLang === 'AR') ? 
+                    'البحث برقم المنتج...' : 
+                    'Search by product code...';
+            }
+
+            // Sync connection badge
+            loadSettings();
         }
     </script>
 </body>
